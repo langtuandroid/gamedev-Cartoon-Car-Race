@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 658e20b0156539b45a22b2047d0c800e
+timeCreated: 1518174343
+licenseType: Store
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: a_LCDNovaObl
+  fontNames:
+  - a_LCDNovaObl
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

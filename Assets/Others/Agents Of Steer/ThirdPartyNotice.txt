@@ -1,0 +1,5 @@
+This asset uses a font that is under the license listed below.
+The license can be found under the same directory as the font.
+ 
+[ostrich-sans-heavy]
+[“OFL/Public Domain”]

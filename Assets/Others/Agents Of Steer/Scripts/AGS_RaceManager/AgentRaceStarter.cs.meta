@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: b9d0d6299dc6d3e4993cfc5246569e90
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioPlayer: {instanceID: 0}
+  - countSound: {fileID: 8300000, guid: ce793e51d453aad40b4fb382c9fc2d10, type: 3}
+  - playerSpawnPoint: {instanceID: 0}
+  - cameraToBeAssigned: {instanceID: 0}
+  - policeHolder: {instanceID: 0}
+  - uIInput: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
