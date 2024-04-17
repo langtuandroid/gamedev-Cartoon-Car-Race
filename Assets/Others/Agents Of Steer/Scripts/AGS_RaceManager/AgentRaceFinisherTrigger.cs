@@ -1,27 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace negleft.AGS{
-    public class AgentRaceFinisher : MonoBehaviour {
+    public class AgentRaceFinisherTrigger : MonoBehaviour {
         /// <summary>
         /// The race manager to finish the race
         /// </summary>
-        public AgentRaceManager myRaceManager;
+        [FormerlySerializedAs("myRaceManager")] [SerializeField] private AgentRacePathManager myRaceManagerAgent;
         /// <summary>
         /// trigger to finish the race
         /// </summary>
         /// <param name="other"></param>
         public void OnTriggerEnter(Collider other)
         {
-            if (!myRaceManager)
+            if (!myRaceManagerAgent)
             {
                 Debug.LogWarning("Agents cant finish, because myRaceManager is not assigned");
                 return;
             }
 
-            if (other.GetComponentInParent<AgentController>()) {
-                myRaceManager.AgentFinishedTheLap(other.GetComponentInParent<AgentController>());
+            if (other.GetComponentInParent<AgentRaceController>()) {
+                myRaceManagerAgent.AgentFinishedLap(other.GetComponentInParent<AgentRaceController>());
             }
         }
 

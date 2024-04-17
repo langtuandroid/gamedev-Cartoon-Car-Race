@@ -1053,7 +1053,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2064107067}
         m_TargetAssemblyTypeName: 
-        m_MethodName: NextTarget
+        m_MethodName: NextTargetSwitch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2231,7 +2231,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2064107068}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LoadThis
+        m_MethodName: LoadThisScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4308,7 +4308,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2064107068}
         m_TargetAssemblyTypeName: 
-        m_MethodName: Link
+        m_MethodName: LogoLink
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4747,7 +4747,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2064107067}
         m_TargetAssemblyTypeName: 
-        m_MethodName: PrevTarget
+        m_MethodName: PrevTargetSwitch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5052,7 +5052,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1670127053}
         m_TargetAssemblyTypeName: 
-        m_MethodName: StartTheRace
+        m_MethodName: StartRace
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

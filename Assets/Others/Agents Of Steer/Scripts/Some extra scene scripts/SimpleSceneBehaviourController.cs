@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace negleft.AGS{
-public class SimpleSceneController : MonoBehaviour {
+public class SimpleSceneBehaviourController : MonoBehaviour {
         /// <summary>
         /// Load tis scene
         /// </summary>
         /// <param name="scene"></param>
-        public void LoadThis(string scene) {
-            Initiate.Fade(scene, Color.black, 2.0f);
+        public void LoadThisScene(string scene) {
+            InitiateFader.CreateFader(scene, Color.black, 2.0f);
         }
         /// <summary>
         /// open this link
         /// </summary>
-        public void Link() {
+        public void LogoLink() {
             #if !UNITY_EDITOR
                 Debug.Log("Why did you click the logo?");
             #endif
@@ -21,7 +21,7 @@ public class SimpleSceneController : MonoBehaviour {
         /// <summary>
         /// Quit the application
         /// </summary>
-        public void Exit() {
+        public void ExitGame() {
             Debug.Log("Quittin'");
             Application.Quit();
         }

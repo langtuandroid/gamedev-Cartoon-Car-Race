@@ -1,26 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 namespace negleft.AGS{
-    public class AgentProgressTab : MonoBehaviour {
+    public class AgentProgressTabRace : MonoBehaviour {
         /// <summary>
         /// Whats this agents position in race UI
         /// </summary>
-        public Text myPos;
+        [FormerlySerializedAs("myPos")] [SerializeField] private Text myPosText;
         /// <summary>
         /// Name of the agent UI
         /// </summary>
-        public Text myName;
+        [FormerlySerializedAs("myName")] [SerializeField] private Text myNameText;
         // has this agent finished
-        bool hasFinished = false;
+        private bool hasFinished = false;
         /// <summary>
         /// Give this agent a name UI
         /// </summary>
         /// <param name="newName"></param>
-        public void GiveName(string newName) {
-            if (myName)
-                myName.text = newName;
+        public void GiveNewName(string newName) {
+            if (myNameText)
+                myNameText.text = newName;
         }
 
         /// <summary>
@@ -28,13 +29,13 @@ namespace negleft.AGS{
         /// </summary>
         /// <param name="posInHierarchy">whats the pos</param>
         /// <param name="isFinished">has this agent finished</param>
-        public void UpdateProgress(int posInHierarchy , bool isFinished) {
-            if (myPos)
-                myPos.text = (posInHierarchy +1).ToString();
+        public void UpdateProgressHud(int posInHierarchy , bool isFinished) {
+            if (myPosText)
+                myPosText.text = (posInHierarchy +1).ToString();
 
-            if (isFinished && myName && !hasFinished)
+            if (isFinished && myNameText && !hasFinished)
             {
-                myName.text = myName.text + " - Finished";
+                myNameText.text = myNameText.text + " - Finished";
                 hasFinished = true;
             }
 

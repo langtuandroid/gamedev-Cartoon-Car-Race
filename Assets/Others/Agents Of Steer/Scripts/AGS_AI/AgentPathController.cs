@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace negleft.AGS
 {
@@ -8,103 +9,103 @@ namespace negleft.AGS
     /// <summary>
     /// Creates path for the agents and controls their progress
     /// </summary>
-    public class AgentPathCreator : MonoBehaviour {
+    public class AgentPathController : MonoBehaviour {
         /// <summary>
         /// Starts all the agents at the start of the scene
         /// </summary>
-        public bool LaunchAtStart = true;
+        [FormerlySerializedAs("LaunchAtStart")] [SerializeField] private bool LaunchAtStartFlag = true;
         /// <summary>
         /// Radius of the path
         /// </summary>
-        public float radius = 5.0f;
+        [FormerlySerializedAs("radius")] [SerializeField] private float radiusValue = 5.0f;
         /// <summary>
         /// is this path a circuit
         /// </summary>
-        public bool circuit = false;
+        [FormerlySerializedAs("circuit")] [SerializeField] private bool circuitFlag = false;
         /// <summary>
         /// make all the agents go one way
         /// </summary>
-        public bool oneWay = false;
+        [FormerlySerializedAs("oneWay")] [SerializeField] private bool oneWayFlag = false;
         /// <summary>
         /// a constant value to fix oneWayLogic
         /// </summary>
-        public int oneWaySkipPoint = 3;
+        [FormerlySerializedAs("oneWaySkipPoint")] [SerializeField] private int oneWaySkipPointValue = 3;
         /// <summary>
         /// Reset fix - play with this value if you vehicle loses control at the end of the path
         /// </summary>
-        public int resetFixThreshold = 5;
+        [FormerlySerializedAs("resetFixThreshold")] [SerializeField] private int resetFixThresholdValue = 5;
         /// <summary>
         /// velocity based pridiction for every agent to make tem stay on te path
         /// </summary>
-        public float pathPridictionMultiplier = 0.5f;
+        [FormerlySerializedAs("pathPridictionMultiplier")] [SerializeField] private float pathPridictionMultiplierValue = 0.5f;
         /// <summary>
         /// Agents that you want to be controlled by this path
         /// </summary>
-        public AgentController[] agents;
-        bool firstRuntimeAgentRecieved = false; 
+        [FormerlySerializedAs("agents")] [SerializeField] private AgentRaceController[] agentsControllers;
+        private bool firstRuntimeAgentRecievedFlag = false; 
         /// <summary>
         /// These are the police agents who will be patroling
         /// </summary>
-        public AgentController[] policeAgents;
-        int[] agentsCurrentPoint;
-        Vector3[] path;
-        GameObject handleHolder;
-        List<Vector3> smoothPath = new List<Vector3>();
+        [FormerlySerializedAs("policeAgents")] [SerializeField] private AgentRaceController[] policeAgentsControllers;
+        private int[] agentsCurrentPoints;
+        private Vector3[] paths;
+        private GameObject handleHolderObject;
+        private List<Vector3> smoothPathList = new List<Vector3>();
         /// <summary>
         /// Resolution for catmull-rom based smoothness of the path,make sure it adds up to 1
         /// </summary>
-        public float pathResolution = 0.1f;
-        bool isStarted = false;
+        [FormerlySerializedAs("pathResolution")] [SerializeField] private float pathResolutionValue = 0.1f;
+        private bool isStartedFlag = false;
         /// <summary>
         /// can race?
         /// </summary>
-        AgentRaceManager myRaceManager;
+        private AgentRacePathManager myRacePathManager;
 
         /// <summary>
         /// Human Racint?
         /// </summary>
-        bool humanIsRacing = false;
-        int humanRacingAt = 0;
+        private bool humanIsRacingFlag = false;
+        private int humanRacingAtValue = 0;
 
 
         private void Start()
         {
-            if (LaunchAtStart)
-                StartTheRace(1);
+            if (LaunchAtStartFlag)
+                StartRace(1);
 
         }
     /// <summary>
     /// Sets everything and starts the race
     /// </summary>
-        public void StartTheRace(int laps)
+        public void StartRace(int laps)
         {
-            path = GetPath();
-            if (agents != null)
-                AssignHandels(agents);
-            if (policeAgents != null)
-                AssignHandels(policeAgents);
+            paths = GetPathPoints();
+            if (agentsControllers != null)
+                AssignAgentsHandels(agentsControllers);
+            if (policeAgentsControllers != null)
+                AssignAgentsHandels(policeAgentsControllers);
 
 
-            agentsCurrentPoint = new int[agents.Length];
-            SetPath();
-            isStarted = true;
+            agentsCurrentPoints = new int[agentsControllers.Length];
+            SetPointsPath();
+            isStartedFlag = true;
 
-            if (!circuit)
+            if (!circuitFlag)
                 laps = 1;
 
-            if (transform.GetComponent<AgentRaceManager>()) {
-                myRaceManager = transform.GetComponent<AgentRaceManager>();
-                myRaceManager.InitiateRaceManager(agents, path,humanIsRacing,humanRacingAt,laps,circuit);
+            if (transform.GetComponent<AgentRacePathManager>()) {
+                myRacePathManager = transform.GetComponent<AgentRacePathManager>();
+                myRacePathManager.InitiateRacePathManager(agentsControllers, paths,humanIsRacingFlag,humanRacingAtValue,laps,circuitFlag);
             }
         }
 
         /// <summary>
         /// Assign handles for the agents to follow
         /// </summary>
-        void AssignHandels(AgentController[] passedAgents) {
-            if (!handleHolder) {
-                handleHolder = new GameObject();
-                handleHolder.name = "HandlesHolder";
+        private void AssignAgentsHandels(AgentRaceController[] passedAgents) {
+            if (!handleHolderObject) {
+                handleHolderObject = new GameObject();
+                handleHolderObject.name = "HandlesHolder";
             }
 
             GameObject tempObj;
@@ -113,9 +114,9 @@ namespace negleft.AGS
                 if (passedAgents[i]) {
                     tempObj = new GameObject();
                     tempObj.name = "HandleFor_" + passedAgents[i].name;
-                    tempObj.transform.parent = handleHolder.transform;
+                    tempObj.transform.parent = handleHolderObject.transform;
                     tempObj.transform.position = passedAgents[i].transform.position + passedAgents[i].transform.forward ;
-                    passedAgents[i].target = tempObj.transform;
+                    passedAgents[i].currTarget = tempObj.transform;
                 }
             }
 
@@ -125,29 +126,29 @@ namespace negleft.AGS
         /// <summary>
         /// Set path points
         /// </summary>
-        void SetPath()
+        private void SetPointsPath()
         {
-            for (int i = 0; i < agents.Length; i++)
+            for (int i = 0; i < agentsControllers.Length; i++)
             {
-                if (agents[i])
-                agents[i].target.position = (path[agentsCurrentPoint[i]]);
+                if (agentsControllers[i])
+                agentsControllers[i].currTarget.position = (paths[agentsCurrentPoints[i]]);
             }
         }
 
-        void Update() {
-            if (!isStarted)
+        private void Update() {
+            if (!isStartedFlag)
                 return;
-            if (agents != null)
-                PathBased(agents, false);
-            if (policeAgents != null)
-                PathBased(policeAgents, true);
+            if (agentsControllers != null)
+                PathBasedAgents(agentsControllers, false);
+            if (policeAgentsControllers != null)
+                PathBasedAgents(policeAgentsControllers, true);
         }
 
     
         /// <summary>
         /// keeps the agents on the path
         /// </summary>
-        void PathBased(AgentController[] passedAgents , bool areThesePolice) {
+        private void PathBasedAgents(AgentRaceController[] passedAgents , bool areThesePolice) {
             Vector3 a = Vector3.zero;//startPoint
             Vector3 b = Vector3.zero;//endPoint
             Vector3 p = Vector3.zero;//pridectedLocation
@@ -172,11 +173,11 @@ namespace negleft.AGS
             Vector3 currentRadius = Vector3.zero;
             Vector3 finalNormal = Vector3.zero;
             Vector3 finalHalved = Vector3.zero;
-            AgentController[] givenAgents = passedAgents;
+            AgentRaceController[] givenAgents = passedAgents;
 
             for (int i = 0; i < givenAgents.Length; i++)
             {
-                if (givenAgents[i] && !givenAgents[i].GetPolicing()) {
+                if (givenAgents[i] && !givenAgents[i].GetPolicingStatus()) {
                     
                     newHandlePos = Vector3.zero;
 
@@ -184,23 +185,23 @@ namespace negleft.AGS
                     distHalf = Mathf.Infinity;
                     finalNormal = Vector3.zero;
                     //Future pos
-                    p = (givenAgents[i].transform.forward + givenAgents[i].transform.position) + ((givenAgents[i].GetVelocity().normalized * givenAgents[i].GetVelocity().magnitude) * pathPridictionMultiplier * givenAgents[i].strengths.pridictPath);
+                    p = (givenAgents[i].transform.forward + givenAgents[i].transform.position) + ((givenAgents[i].GetVelocityVector().normalized * givenAgents[i].GetVelocityVector().magnitude) * pathPridictionMultiplierValue * givenAgents[i].strengthsInfo.pridictPathValue);
                     //future half
                     pHalf = (givenAgents[i].transform.forward + givenAgents[i].transform.position);
                     newHandlePos = p;
 
-                    for (int j = 0; j < path.Length; j++) {
+                    for (int j = 0; j < paths.Length; j++) {
 
-                        a = path[j];
-                        if (j >= path.Length - 1)
+                        a = paths[j];
+                        if (j >= paths.Length - 1)
                         {
-                            b = path[0];
-                            if (!circuit)
-                                b = path[path.Length - 2];
+                            b = paths[0];
+                            if (!circuitFlag)
+                                b = paths[paths.Length - 2];
                         }
                         else
                         {
-                            b = path[j + 1];
+                            b = paths[j + 1];
                         }
                         //normal points to get parallel cast on the path
                         normalPoint = a + Vector3.Dot((p - a), (b - a)) / Vector3.Dot((b - a), (b - a)) * (b - a);
@@ -247,51 +248,51 @@ namespace negleft.AGS
                             finalNormal = normalPoint;
                         }
 
-                        if ((j == path.Length - 1)) {
+                        if ((j == paths.Length - 1)) {
                             
-                            if (nearestHalfPoint > nearestMainPoint && oneWay && (Mathf.Abs(nearestHalfPoint - nearestMainPoint) < resetFixThreshold)) {
+                            if (nearestHalfPoint > nearestMainPoint && oneWayFlag && (Mathf.Abs(nearestHalfPoint - nearestMainPoint) < resetFixThresholdValue)) {
                                 
-                                if (oneWaySkipPoint >= path.Length) {
-                                    oneWaySkipPoint = 0;
+                                if (oneWaySkipPointValue >= paths.Length) {
+                                    oneWaySkipPointValue = 0;
                                 }
-                                int selectedPoint = nearestHalfPoint + oneWaySkipPoint;
+                                int selectedPoint = nearestHalfPoint + oneWaySkipPointValue;
                                 
-                                if (selectedPoint >= path.Length) {
+                                if (selectedPoint >= paths.Length) {
                                     
-                                    selectedPoint = (nearestHalfPoint + oneWaySkipPoint) - (path.Length-1);
+                                    selectedPoint = (nearestHalfPoint + oneWaySkipPointValue) - (paths.Length-1);
                                 }
-                                finalNormal = path[selectedPoint];
+                                finalNormal = paths[selectedPoint];
                             }
                         }
                     }
 
-                    if (myRaceManager && !areThesePolice)
+                    if (myRacePathManager && !areThesePolice)
                     {
-                        myRaceManager.UpdateAgentsCurrentLapPosition(i, nearestHalfPoint, finalHalved);
+                        myRacePathManager.UpdateAgentsCurrentRaceLapPosition(i, nearestHalfPoint, finalHalved);
                     }
 
 
-                    if (((p - finalNormal).magnitude > radius)) {
-                        newHandlePos = (finalNormal + (p - finalNormal).normalized * radius);
+                    if (((p - finalNormal).magnitude > radiusValue)) {
+                        newHandlePos = (finalNormal + (p - finalNormal).normalized * radiusValue);
                     }
                     Debug.DrawLine(p, newHandlePos);
-                    if (givenAgents[i].target){
+                    if (givenAgents[i].currTarget){
                         if (!float.IsNaN(newHandlePos.x) && !float.IsNaN(newHandlePos.y) && !float.IsNaN(newHandlePos.z))
-                            givenAgents[i].target.position = newHandlePos;
+                            givenAgents[i].currTarget.position = newHandlePos;
                     }
                 }
                 
 
             }
 
-            if (myRaceManager && !areThesePolice)
-                myRaceManager.SortTheRacingAgents();
+            if (myRacePathManager && !areThesePolice)
+                myRacePathManager.SortTheRaceAgents();
         }
         /// <summary>
         ///Returns a vector 3 array with path points
         /// </summary>
         /// <returns></returns>
-        public Vector3[] GetPath() {
+        public Vector3[] GetPathPoints() {
 
 
             if (transform.childCount < 4) {
@@ -312,17 +313,17 @@ namespace negleft.AGS
                 return straightPath;
             }
 
-            smoothPath.Clear();
+            smoothPathList.Clear();
             for (int i = 0; i < transform.childCount; i++) {
 
-                if (circuit)
-                    CatmullRomDisplayAndRecord(i, true);
+                if (circuitFlag)
+                    CatmullRomDisplayAndRecordPath(i, true);
                 else {
                     if (i != transform.childCount - 1)
-                        CatmullRomDisplayAndRecord(i, true);
+                        CatmullRomDisplayAndRecordPath(i, true);
                 }
             }
-                return smoothPath.ToArray();
+                return smoothPathList.ToArray();
         }
         
         /// <summary>
@@ -343,19 +344,19 @@ namespace negleft.AGS
                     {
                     if (i < count - 1)
                         Gizmos.DrawLine(transform.GetChild(i).position, transform.GetChild(i + 1).position);
-                    else if (circuit){
+                    else if (circuitFlag){
                         Gizmos.DrawLine(transform.GetChild(i).position, transform.GetChild(0).position);
                     }
                 }
                     else {
                     
-                        CatmullRomDisplayAndRecord(i, false);
+                        CatmullRomDisplayAndRecordPath(i, false);
                     
                     }
                 
                 
             }
-            if (circuit && count < 4 && count >= 2)
+            if (circuitFlag && count < 4 && count >= 2)
             {
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawLine(transform.GetChild(0).position, transform.GetChild(count-1).position);
@@ -364,7 +365,7 @@ namespace negleft.AGS
 
         //Catmull-Rom
 
-        void CatmullRomDisplayAndRecord (int pos , bool recordPath)
+        private void CatmullRomDisplayAndRecordPath (int pos , bool recordPath)
         {
 
             if (transform.childCount < 4) {
@@ -381,10 +382,10 @@ namespace negleft.AGS
             Vector3 p3;
 
             //Circuit
-            p0 = transform.GetChild(ClampListPos(pos - 1 ,ref endThis)).position;
+            p0 = transform.GetChild(ClampListPositions(pos - 1 ,ref endThis)).position;
             p1 = transform.GetChild(pos).position;
-            p2 = transform.GetChild(ClampListPos(pos + 1, ref endThis)).position;
-            p3 = transform.GetChild(ClampListPos(pos + 2, ref endThis)).position;
+            p2 = transform.GetChild(ClampListPositions(pos + 1, ref endThis)).position;
+            p3 = transform.GetChild(ClampListPositions(pos + 2, ref endThis)).position;
 
             if (endThis)
                 return;
@@ -392,12 +393,12 @@ namespace negleft.AGS
             //The start position of the line
             Vector3 lastPos = p1;
             if (recordPath) {
-                smoothPath.Add(lastPos);
+                smoothPathList.Add(lastPos);
             }
 
             //The spline's resolution
             //Make sure it's is adding up to 1, so 0.3 will give a gap, but 0.2 will work
-            float resolution = pathResolution;
+            float resolution = pathResolutionValue;
 
             //How many times should we loop?
             int loops = Mathf.FloorToInt(1f / resolution);
@@ -408,7 +409,7 @@ namespace negleft.AGS
                 float t = i * resolution;
 
                 //Find the coordinate between the end points with a Catmull-Rom spline
-                Vector3 newPos = GetCatmullRomPosition(t, p0, p1, p2, p3);
+                Vector3 newPos = GetCatmullRomPos(t, p0, p1, p2, p3);
 
                 //Draw this line segment
                 if (!recordPath)
@@ -416,7 +417,7 @@ namespace negleft.AGS
                     Gizmos.DrawLine(lastPos, newPos);
                 }
                 else {
-                    smoothPath.Add(newPos);
+                    smoothPathList.Add(newPos);
                 }
 
                 //Save this pos so we can draw the next line segment
@@ -425,9 +426,9 @@ namespace negleft.AGS
         }
 
         //Clamp the list positions to allow looping
-        int ClampListPos(int pos , ref bool endit)
+        private int ClampListPositions(int pos , ref bool endit)
         {
-            if (circuit)
+            if (circuitFlag)
             {
                 if (pos < 0)
                 {
@@ -462,7 +463,7 @@ namespace negleft.AGS
         }
 
         //Returns a position between 4 Vector3 with Catmull-Rom spline algorithm
-        Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+        private Vector3 GetCatmullRomPos(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
             //The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
             Vector3 a = 2f * p1;
@@ -479,22 +480,22 @@ namespace negleft.AGS
         /// Add new agent for the race
         /// </summary>
         /// <param name="newAgent"></param>
-        public void AddNewAgent( AgentController newAgent) {
-            if (isStarted) {
+        public void AddNewRaceAgent( AgentRaceController newAgent) {
+            if (isStartedFlag) {
                 Debug.LogWarning("You can't add more agents to the race once it's started");
             }
-            if (!firstRuntimeAgentRecieved) {
-                agents = new AgentController[0];
-                firstRuntimeAgentRecieved = true;
+            if (!firstRuntimeAgentRecievedFlag) {
+                agentsControllers = new AgentRaceController[0];
+                firstRuntimeAgentRecievedFlag = true;
             }
 
-            List<AgentController> currAgents = new List<AgentController>();
+            List<AgentRaceController> currAgents = new List<AgentRaceController>();
             currAgents.Clear();
-            currAgents.AddRange(agents);
+            currAgents.AddRange(agentsControllers);
             if (newAgent != null)
             {
                 currAgents.Add(newAgent);
-                agents = currAgents.ToArray();
+                agentsControllers = currAgents.ToArray();
             }
 
         }
@@ -502,12 +503,9 @@ namespace negleft.AGS
         /// Did we spawn a human Controlled agent
         /// </summary>
         /// <param name="at"></param>
-        public void PlayerSpawned (int at) {
-            humanIsRacing = true;
-            humanRacingAt = at;
+        public void PlayerSpawnedAt (int at) {
+            humanIsRacingFlag = true;
+            humanRacingAtValue = at;
         }
-
-        
-
     }
 }

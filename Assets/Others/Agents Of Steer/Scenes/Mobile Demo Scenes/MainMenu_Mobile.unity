@@ -4951,7 +4951,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592003}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: SetInputType
+        m_MethodName: SetNewInputType
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5962,7 +5962,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592002}
         m_TargetAssemblyTypeName: 
-        m_MethodName: Exit
+        m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6728,7 +6728,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592003}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: SetInputType
+        m_MethodName: SetNewInputType
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7319,7 +7319,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592002}
         m_TargetAssemblyTypeName: 
-        m_MethodName: Exit
+        m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9084,7 +9084,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592002}
         m_TargetAssemblyTypeName: 
-        m_MethodName: Link
+        m_MethodName: LogoLink
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9635,7 +9635,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592003}
         m_TargetAssemblyTypeName: 
-        m_MethodName: InitiateNewRaceConfig
+        m_MethodName: InitiateNewAIRaceConfig
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11064,7 +11064,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592003}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: UpdateAICount
+        m_MethodName: UpdateAICountValue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12587,7 +12587,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 13592003}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: UpdateLapCount
+        m_MethodName: UpdateLapCountValue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

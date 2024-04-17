@@ -2,14 +2,14 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 namespace negleft.AGS{
-    public static class Initiate
+    public static class InitiateFader
     {
-        static bool areWeFading = false;
+        static bool areWeFadingFlag = false;
 
         //Create Fader object and assing the fade scripts and assign all the variables
-        public static void Fade(string scene, Color col, float multiplier)
+        public static void CreateFader(string scene, Color col, float multiplier)
         {
-            if (areWeFading)
+            if (areWeFadingFlag)
             {
                 Debug.Log("Already Fading");
                 return;
@@ -20,22 +20,22 @@ namespace negleft.AGS{
             Canvas myCanvas = init.AddComponent<Canvas>();
             myCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             myCanvas.sortingOrder = 10;
-            init.AddComponent<Fader>();
+            init.AddComponent<FaderBehaviour>();
             init.AddComponent<CanvasGroup>();
             init.AddComponent<Image>();
 
-            Fader scr = init.GetComponent<Fader>();
-            scr.fadeDamp = multiplier;
-            scr.fadeScene = scene;
-            scr.fadeColor = col;
-            scr.start = true;
-            areWeFading = true;
-            scr.InitiateFader();
+            FaderBehaviour scr = init.GetComponent<FaderBehaviour>();
+            scr.fadeDampValue = multiplier;
+            scr.fadeSceneName = scene;
+            scr.fadeColorValue = col;
+            scr.startFlag = true;
+            areWeFadingFlag = true;
+            scr.InitiateFaderBehaviour();
             
         }
 
-        public static void DoneFading() {
-            areWeFading = false;
+        public static void DoneFadingFlag() {
+            areWeFadingFlag = false;
         }
     }
 }

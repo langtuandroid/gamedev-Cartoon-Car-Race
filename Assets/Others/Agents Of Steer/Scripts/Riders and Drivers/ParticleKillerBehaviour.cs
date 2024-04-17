@@ -5,19 +5,19 @@ namespace negleft.AGS{
     /// <summary>
     /// Destroys the particle system after it stops playing
     /// </summary>
-    public class ParticleKiller : MonoBehaviour {
-        ParticleSystem ps;
+    public class ParticleKillerBehaviour : MonoBehaviour {
+        private ParticleSystem pSystem;
         // Use this for initialization
-        void Start () {
+        private void Start () {
             if (transform.GetComponent<ParticleSystem>())
-                ps = transform.GetComponent<ParticleSystem>();
-            if (ps)
-                StartCoroutine(Kill());
+                pSystem = transform.GetComponent<ParticleSystem>();
+            if (pSystem)
+                StartCoroutine(KillCoroutine());
         }
         //Killing routine
-        IEnumerator Kill() {
-            while (ps) {
-                if (!ps.IsAlive())
+        private IEnumerator KillCoroutine() {
+            while (pSystem) {
+                if (!pSystem.IsAlive())
                     Destroy(gameObject);
                 yield return null;
             }
