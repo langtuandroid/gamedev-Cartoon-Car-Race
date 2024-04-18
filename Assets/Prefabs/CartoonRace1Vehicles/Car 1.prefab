@@ -609,37 +609,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a226f304f496b1449b3dbf5f8e32e572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  weights:
-    pursuit: 1.2
-    avoidObstacle: 1.5
-    containment: 2
-    pathFollowing: 0.8
-    seperation: 0.35
-    unallignedCollisionAvoidence: 0.25
-    queuing: 2.5
-  strengths:
-    pursuitAhead: 36.3
-    queuingAhead: 0.2
-    seperationDistance: 13.55
-    unalignedAvoidenceAhead: 1
-    containmentAhead: 4.73
-    pridictPath: 1
-  limitersAndInfluencers:
-    maximumDistanceForPursuit: 30
-    maximumContainmentDistance: 25
-    maximumObstacleAvoidenceDistance: 20
-    detectionLength: 5
-    avoidForce: 0.5
-    velocitySensorMultiplier: 0.25
-  reverseControl:
-    canReverse: 1
-    minVelocityForReverseTimeOut: 0.25
-    reverseTimeOutCounter: 0
-    reverseTimeOutIn: 0.25
-    reversingSensorMultiplier: 0.35
-    reversing: 0
-  sensors:
+  currTarget: {fileID: 0}
+  weightsInfo:
+    pursuitValue: 1.2
+    avoidObstacleValue: 1.5
+    containmentValue: 2
+    pathFollowingValue: 0.8
+    seperationValue: 0.35
+    unallignedCollisionAvoidenceValue: 0.25
+    queuingValue: 2.5
+  strengthsInfo:
+    pursuitAheadValue: 36.3
+    queuingAheadValue: 0.2
+    seperationDistanceValue: 13.55
+    unalignedAvoidenceAheadValue: 1
+    containmentAheadValue: 4.73
+    pridictPathValue: 1
+  limitersAndInfluencersValue:
+    maximumDistanceForPursuitValue: 30
+    maximumContainmentDistanceValue: 25
+    maximumObstacleAvoidenceDistanceValue: 20
+    detectionLengthValue: 5
+    avoidForceValue: 0.5
+    velocitySensorMultiplierValue: 0.25
+  reverseControlInfo:
+    canReverseFlag: 1
+    minVelocityForReverseTimeOutValue: 0.25
+    reverseTimeOutCounterValue: 0
+    reverseTimeOutInValue: 0.25
+    reversingSensorMultiplierValue: 0.35
+    reversingFlag: 0
+  sensorsTransforms:
   - {fileID: 5270604814331120990}
   - {fileID: 5276748675458882380}
   - {fileID: 5276653907006033182}
@@ -647,13 +647,13 @@ MonoBehaviour:
   - {fileID: 5276576939486705672}
   - {fileID: 5270725848973672250}
   - {fileID: 5270458753961866762}
-  whatIsaWall:
+  whatIsaWallMask:
     serializedVersion: 2
     m_Bits: 64
-  useSensorsOn:
+  useSensorsOnMask:
     serializedVersion: 2
     m_Bits: 115
-  showDebugRays: 1
+  showDebugRaysFlag: 1
 --- !u!114 &5238365601476221284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,77 +666,79 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 853fe5779a3062a48a51646969d75eb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wheels:
-  - wheelCol: {fileID: 5413952662834113016}
-    wheelTrans: {fileID: 5052832053896756455}
-    isAMotorWheel: 0
-    isASteeringWheel: 1
-    skidRenderer: {fileID: 0}
-    skidMarkWidth: 0.35
-    skidVertexHolder: []
-  - wheelCol: {fileID: 5413385269210861830}
-    wheelTrans: {fileID: 5052832053896689103}
-    isAMotorWheel: 1
-    isASteeringWheel: 0
-    skidRenderer: {fileID: 0}
-    skidMarkWidth: 0.35
-    skidVertexHolder: []
-  - wheelCol: {fileID: 5417051800392988084}
-    wheelTrans: {fileID: 5052832053896793991}
-    isAMotorWheel: 0
-    isASteeringWheel: 1
-    skidRenderer: {fileID: 0}
-    skidMarkWidth: 0.35
-    skidVertexHolder: []
-  - wheelCol: {fileID: 5417121951404866718}
-    wheelTrans: {fileID: 5052832053896735149}
-    isAMotorWheel: 1
-    isASteeringWheel: 0
-    skidRenderer: {fileID: 0}
-    skidMarkWidth: 0.35
-    skidVertexHolder: []
-  controlledByPlayer: 0
-  controlType: 0
-  wheelsForSpeedCalculation:
+  wheelsList:
+  - wheelCollider: {fileID: 5413952662834113016}
+    wheelTransform: {fileID: 5052832053896756455}
+    isAMotorWheelFlag: 0
+    isASteeringWheelFlag: 1
+    skidLineRenderer: {fileID: 0}
+    skidMarkWidthValue: 0.35
+    skidVertexHolderList: []
+  - wheelCollider: {fileID: 5413385269210861830}
+    wheelTransform: {fileID: 5052832053896689103}
+    isAMotorWheelFlag: 1
+    isASteeringWheelFlag: 0
+    skidLineRenderer: {fileID: 0}
+    skidMarkWidthValue: 0.35
+    skidVertexHolderList: []
+  - wheelCollider: {fileID: 5417051800392988084}
+    wheelTransform: {fileID: 5052832053896793991}
+    isAMotorWheelFlag: 0
+    isASteeringWheelFlag: 1
+    skidLineRenderer: {fileID: 0}
+    skidMarkWidthValue: 0.35
+    skidVertexHolderList: []
+  - wheelCollider: {fileID: 5417121951404866718}
+    wheelTransform: {fileID: 5052832053896735149}
+    isAMotorWheelFlag: 1
+    isASteeringWheelFlag: 0
+    skidLineRenderer: {fileID: 0}
+    skidMarkWidthValue: 0.35
+    skidVertexHolderList: []
+  controlledByPlayerFlag: 0
+  currControlType: 0
+  wheelsForSpeedCalculationColliders:
   - {fileID: 5413952662834113016}
   - {fileID: 5417051800392988084}
-  centerOfMass: {x: 0, y: -0.99, z: -0.15}
-  centerOfMassAdditiveY: -0.15
-  maxTorque: 400
-  handBrakeTorque: 2500
-  brakeSenstivity: 0.35
-  maxSteerAngle: 35
-  speedRelativeSteer: 0
-  steerStabilityThreshold: 0
-  flipSteerOnReverse: 1
-  steerResponsiveness: 12.5
-  pressureOnClimbs: 5
-  gears:
-  - tillWhatRPM: 300
-    maxTorqueMultiplier: 2.6
-  - tillWhatRPM: 650
-    maxTorqueMultiplier: 2
-  - tillWhatRPM: 950
-    maxTorqueMultiplier: 1.5
-  - tillWhatRPM: 1150
-    maxTorqueMultiplier: 1.45
-  - tillWhatRPM: 1250
-    maxTorqueMultiplier: 1.35
-  maxSpeed: 170
-  maxReverseSpeed: 50
-  skidVertexDistance: 0.02
-  maxSkidVerticies: 100
-  slideAfterSlip: 0.3
-  skidMaterial: {fileID: 2100000, guid: 25334410bece27e418cbeeae5b5018b6, type: 2}
-  skidSmoke: {fileID: 1532473075288782, guid: 0d5d5a5117e1ffb439e735cdd1b75e64, type: 3}
-  spark: {fileID: 1761318044518430, guid: 8d198d3a08c95c343a11ae1313f836da, type: 3}
-  skidSound: {fileID: 8300000, guid: fbe169b91b9965e4b8fee3b518226f46, type: 3}
-  canFlip: 0
-  flipTimeOut: 1
-  rearLights: {fileID: 0}
-  brakeColor: {r: 64, g: 0, b: 0, a: 1}
-  idleColor: {r: 0, g: 0, b: 0, a: 1}
-  reverseColor: {r: 47.937256, g: 47.937256, b: 47.937256, a: 1}
+  centerOfMassVector: {x: 0, y: -0.99, z: -0.15}
+  centerOfMassAdditiveYValue: -0.15
+  maxTorqueValue: 400
+  handBrakeTorqueValue: 2500
+  brakeSenstivityValue: 0.35
+  maxSteerAngleValue: 35
+  speedRelativeSteerFlag: 0
+  steerStabilityThresholdValue: 0
+  flipSteerOnReverseFlag: 1
+  steerResponsivenessValue: 12.5
+  pressureOnClimbsValue: 5
+  gearsInfo:
+  - tillWhatRPMValue: 300
+    maxTorqueMultiplierValue: 2.6
+  - tillWhatRPMValue: 650
+    maxTorqueMultiplierValue: 2
+  - tillWhatRPMValue: 950
+    maxTorqueMultiplierValue: 1.5
+  - tillWhatRPMValue: 1150
+    maxTorqueMultiplierValue: 1.45
+  - tillWhatRPMValue: 1250
+    maxTorqueMultiplierValue: 1.35
+  maxSpeedValue: 170
+  maxReverseSpeedValue: 50
+  skidVertexDistanceValue: 0.02
+  maxSkidVerticiesValue: 100
+  slideAfterSlipValue: 0.3
+  skidMarkMaterial: {fileID: 2100000, guid: 25334410bece27e418cbeeae5b5018b6, type: 2}
+  skidSmokeObject: {fileID: 1532473075288782, guid: 0d5d5a5117e1ffb439e735cdd1b75e64,
+    type: 3}
+  sparkObject: {fileID: 1761318044518430, guid: 8d198d3a08c95c343a11ae1313f836da,
+    type: 3}
+  skidSoundoClip: {fileID: 8300000, guid: fbe169b91b9965e4b8fee3b518226f46, type: 3}
+  canFlipFlag: 0
+  flipTimeOutValue: 1
+  rearLightsRenderer: {fileID: 0}
+  brakeColorValue: {r: 64, g: 0, b: 0, a: 1}
+  idleColorValue: {r: 0, g: 0, b: 0, a: 1}
+  reverseColorValue: {r: 47.937256, g: 47.937256, b: 47.937256, a: 1}
 --- !u!82 &5192297434804552124
 AudioSource:
   m_ObjectHideFlags: 0
@@ -845,9 +847,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d661ff03deddcb9489721ce080224554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WheelL: {fileID: 5417121951404866718}
-  WheelR: {fileID: 5413385269210861830}
-  antiRoll: 3000
+  WheelLCollider: {fileID: 5417121951404866718}
+  WheelRCollider: {fileID: 5413385269210861830}
+  antiRollValue: 3000
 --- !u!114 &5241323231699454648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -860,9 +862,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d661ff03deddcb9489721ce080224554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WheelL: {fileID: 5413952662834113016}
-  WheelR: {fileID: 5417051800392988084}
-  antiRoll: 3000
+  WheelLCollider: {fileID: 5413952662834113016}
+  WheelRCollider: {fileID: 5417051800392988084}
+  antiRollValue: 3000
 --- !u!114 &8912168158831038920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,12 +877,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51fa9b117558ecc46ace09af08a05294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  suspensionDistance: 0.16
-  suspensionSpring: 7486
-  suspensionDamper: 1000
-  suspensionTargetPos: 0.5
-  forwardStiffness: 2
-  sidewayStiffness: 6.06
+  suspensionDistanceValue: 0.16
+  suspensionSpringValue: 7486
+  suspensionDamperValue: 1000
+  suspensionTargetPosValue: 0.5
+  forwardStiffnessValue: 2
+  sidewayStiffnessValue: 6.06
 --- !u!1 &5273629062953406318
 GameObject:
   m_ObjectHideFlags: 0

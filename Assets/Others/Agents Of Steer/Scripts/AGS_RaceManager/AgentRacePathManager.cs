@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 namespace negleft.AGS{
@@ -271,6 +272,7 @@ namespace negleft.AGS{
         /// Add the object that hold the UI based controls
         /// </summary>
         [FormerlySerializedAs("mobileControlsHolder")] [SerializeField] private GameObject mobileControlsHolderObject;
+        private bool playerFinishFlag = false;
 
 
         /// <summary>
@@ -523,6 +525,7 @@ namespace negleft.AGS{
                     if (humanInRaceFlag && humanIDValue < agentsRacingInfos.Length) {
                         if (agentsRacingInfos[humanIDValue].finishedFlag) {
                             ShowEndPanelHud();
+                            if (!playerFinishFlag) ShowPlayerPlace();
                         }
                     }
 
@@ -712,6 +715,25 @@ namespace negleft.AGS{
         /// <returns></returns>
         public bool IsTheRaceInitiated() {
             return raceManagerInitiatedFlag;
+        }
+
+        private void ShowPlayerPlace()
+        {
+            if (humanInRaceFlag && agentsInOrderInfos.Length > 0)
+            {
+                var playerName = agentsRacingInfos[humanIDValue].agentsNameValue;
+                var playerPlace = 0;
+                for (var i = 0; i < agentsInOrderInfos.Length; i++)
+                    if (agentsInOrderInfos[i].agentsNameValue.Equals(playerName))
+                    {
+                        playerPlace = i + 1;
+                        break;
+                    }
+
+                Debug.Log("Player place is " + playerPlace);
+            }
+
+            playerFinishFlag = true;
         }
     }
 }
