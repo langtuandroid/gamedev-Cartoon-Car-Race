@@ -15,5 +15,19 @@ MonoBehaviour:
   Vehicles:
   - Id: 1
     Price: 20
+    Sprite: {fileID: 21300000, guid: 556fec3ca8ec0d546a51d265ce9df2f6, type: 3}
   - Id: 2
     Price: 30
+    Sprite: {fileID: 21300000, guid: 0a8fc37307ac29146a77715163159733, type: 3}
+  - Id: 3
+    Price: 40
+    Sprite: {fileID: 21300000, guid: b15d31645bdb94d4d94d3372b7dd4bdb, type: 3}
+  - Id: 4
+    Price: 50
+    Sprite: {fileID: 21300000, guid: ecbfdba0c89a1e94ca3d4b4854657234, type: 3}
+  - Id: 5
+    Price: 60
+    Sprite: {fileID: 21300000, guid: 0871f574d9a7d7641a240aec1b8acc9a, type: 3}
+  - Id: 6
+    Price: 70
+    Sprite: {fileID: 21300000, guid: 8c590634e2583aa48a2d4a1011e90e41, type: 3}

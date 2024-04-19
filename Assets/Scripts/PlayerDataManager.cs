@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -13,11 +14,28 @@ public class PlayerDataManager
 
     public int Gold => playerData.Gold;
 
+    public int SelectedVehicle => playerData.SelectedVehicle;
+
     public PlayerDataManager(VehiclesConfig vehiclesConfig)
     {
         saveDataPath = Application.persistentDataPath + "/";
         LoadData();
         this.vehiclesConfig = vehiclesConfig;
+    }
+
+    public bool CheckPurchasedVehicle(int vehicleId) => playerData.PurchasedVehicles.Contains(vehicleId);
+
+    public bool TryBuyTransportVehicle(int vehicleId)
+    {
+        var vehicleData = vehiclesConfig.Vehicles.FirstOrDefault(v => v.Id == vehicleId);
+
+        if (CheckPurchasedVehicle(vehicleId) || vehicleData == null || playerData.Gold < vehicleData.Price)
+            return false;
+
+        playerData.Gold -= vehicleData.Price;
+        playerData.PurchasedVehicles.Add(vehicleId);
+
+        return true;
     }
 
     public void AddGold(int gold)
@@ -70,7 +88,8 @@ public class PlayerDataManager
         playerData = new PlayerData()
         {
             Gold = 10,
-            PurchasedVehicles = new List<int>()
+            SelectedVehicle = 1,
+            PurchasedVehicles = new List<int>() {1}
         };
     }
 }

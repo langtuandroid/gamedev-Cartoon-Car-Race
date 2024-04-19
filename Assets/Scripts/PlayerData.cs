@@ -5,5 +5,6 @@ using System.Collections.Generic;
 public class PlayerData
 {
     public int Gold;
+    public int SelectedVehicle;
     public List<int> PurchasedVehicles;
 }

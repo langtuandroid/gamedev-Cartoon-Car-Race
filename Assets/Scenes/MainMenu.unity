@@ -465,7 +465,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LoadSceneButton
+        m_MethodName: LoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2563,7 +2563,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map2
+        m_MethodName: InitiateRaceConfig_Map2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3229,7 +3229,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map5
+        m_MethodName: InitiateRaceConfig_Map5
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4879,7 +4879,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: CloseOptionsPanelButton
+        m_MethodName: CloseOptionsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5185,7 +5185,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowStorePanelButton
+        m_MethodName: ShowStorePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7421,7 +7421,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LoadSceneButton
+        m_MethodName: LoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9360,7 +9360,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowStorePanelButton
+        m_MethodName: ShowStorePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9515,7 +9515,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: LoadSceneButton
+        m_MethodName: LoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10351,7 +10351,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ShowTournamentsPanelButton
+        m_MethodName: ShowTournamentsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11314,7 +11314,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowOptionsPanelButton
+        m_MethodName: ShowOptionsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11869,7 +11869,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: CloseStorePanelPanelButton
+        m_MethodName: CloseStorePanelPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13951,7 +13951,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map4
+        m_MethodName: InitiateRaceConfig_Map4
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14388,7 +14388,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowTournamentsPanelButton
+        m_MethodName: ShowTournamentsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14928,7 +14928,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: ShowStorePanelButton
+        m_MethodName: ShowStorePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15261,7 +15261,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map1
+        m_MethodName: InitiateRaceConfig_Map1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16989,7 +16989,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map3
+        m_MethodName: InitiateRaceConfig_Map3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18155,7 +18155,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map3
+        m_MethodName: InitiateRaceConfig_Map3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18833,7 +18833,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map2
+        m_MethodName: InitiateRaceConfig_Map2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -19403,7 +19403,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map2
+        m_MethodName: InitiateRaceConfig_Map2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -20506,7 +20506,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1224896198}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: InitiateNewRaceConfig_Map1
+        m_MethodName: InitiateRaceConfig_Map1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -21081,7 +21081,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 803546025}
         m_TargetAssemblyTypeName: 
-        m_MethodName: CloseTournamentsPanelPanelButton
+        m_MethodName: CloseTournamentsPanelPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

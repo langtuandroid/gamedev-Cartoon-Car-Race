@@ -2,10 +2,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LoadController : MonoBehaviour
+public class LoadSceneController : MonoBehaviour
 {
 
-    IEnumerator Start()
+    private IEnumerator Start()
     {
         yield return new WaitForSeconds(3f);
 
