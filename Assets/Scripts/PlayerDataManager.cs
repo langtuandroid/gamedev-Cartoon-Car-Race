@@ -25,7 +25,7 @@ public class PlayerDataManager
 
     public bool CheckPurchasedVehicle(int vehicleId) => playerData.PurchasedVehicles.Contains(vehicleId);
 
-    public bool TryBuyTransportVehicle(int vehicleId)
+    public bool TryBuyVehicle(int vehicleId)
     {
         var vehicleData = vehiclesConfig.Vehicles.FirstOrDefault(v => v.Id == vehicleId);
 
@@ -34,14 +34,25 @@ public class PlayerDataManager
 
         playerData.Gold -= vehicleData.Price;
         playerData.PurchasedVehicles.Add(vehicleId);
+        SaveData();
 
         return true;
     }
 
     public void AddGold(int gold)
     {
+        if (gold == 0) return;
         playerData.Gold += gold;
         SaveData();
+    }
+
+    public void SelectVehicle(int vehicleId)
+    {
+        if (playerData.SelectedVehicle != vehicleId && CheckPurchasedVehicle(vehicleId))
+        {
+            playerData.SelectedVehicle = vehicleId;
+            SaveData();
+        }
     }
 
     private void LoadData()
@@ -87,9 +98,9 @@ public class PlayerDataManager
     {
         playerData = new PlayerData()
         {
-            Gold = 10,
-            SelectedVehicle = 1,
-            PurchasedVehicles = new List<int>() {1}
+            Gold = 50,
+            SelectedVehicle = 0,
+            PurchasedVehicles = new List<int>() {0}
         };
     }
 }

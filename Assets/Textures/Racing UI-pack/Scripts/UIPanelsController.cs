@@ -9,6 +9,7 @@ public class UIPanelsController : MonoBehaviour {
     [FormerlySerializedAs("optionsPanelAnim")] [SerializeField] private Animator optionsPanelAnimator;
     [FormerlySerializedAs("tournamentsPanelAnim")] [SerializeField] private  Animator tournamentsPanelAnimator;
     [FormerlySerializedAs("storePanelAnim")] [SerializeField] private  Animator storePanelAnimator;
+    [SerializeField] private GameObject garagePanel;
 
     public void ShowOptionsPanel()
     {
@@ -23,6 +24,11 @@ public class UIPanelsController : MonoBehaviour {
     public void ShowStorePanel()
     {
         storePanelAnimator.gameObject.SetActive(!storePanelAnimator.gameObject.activeSelf);
+    }
+
+    public void ShowGaragePanel()
+    {
+        garagePanel.gameObject.SetActive(!garagePanel.gameObject.activeSelf);
     }
 
     public void CloseOptionsPanel()

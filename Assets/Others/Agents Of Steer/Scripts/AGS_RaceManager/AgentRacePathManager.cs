@@ -5,6 +5,8 @@ using System;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Zenject;
+
 namespace negleft.AGS{
     [RequireComponent(typeof(AgentPathController))]
     public class AgentRacePathManager : MonoBehaviour {
@@ -273,6 +275,9 @@ namespace negleft.AGS{
         /// </summary>
         [FormerlySerializedAs("mobileControlsHolder")] [SerializeField] private GameObject mobileControlsHolderObject;
         private bool playerFinishFlag = false;
+        [SerializeField] private Text raceRewardText;
+        [Inject] private PlayerDataManager playerDataManager;
+        [Inject] private RaceRewardConfig raceRewardConfig;
 
 
         /// <summary>
@@ -722,15 +727,20 @@ namespace negleft.AGS{
             if (humanInRaceFlag && agentsInOrderInfos.Length > 0)
             {
                 var playerName = agentsRacingInfos[humanIDValue].agentsNameValue;
-                var playerPlace = 0;
+                var playerPlace = -1;
                 for (var i = 0; i < agentsInOrderInfos.Length; i++)
                     if (agentsInOrderInfos[i].agentsNameValue.Equals(playerName))
                     {
-                        playerPlace = i + 1;
+                        playerPlace = i;
                         break;
                     }
 
-                Debug.Log("Player place is " + playerPlace);
+                if (raceRewardConfig != null && playerDataManager != null && playerPlace != -1)
+                {
+                    var reward = raceRewardConfig.GetReward(playerPlace);
+                    playerDataManager.AddGold(reward);
+                    if (reward > 0 && raceRewardText != null) raceRewardText.text = "+" + reward + "$";
+                }
             }
 
             playerFinishFlag = true;

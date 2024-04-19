@@ -1,3 +1,4 @@
+using System.Linq;
 using negleft.AGS;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,10 +7,14 @@ using Zenject;
 
 public class MainMenuSceneController : MonoBehaviour
 {
-    [SerializeField] private Image playerCarImage;
+    [SerializeField] private Text playerGoldText;
+    [SerializeField] private Image playerVehicleImage;
+    [SerializeField] private Text playerVehiclePriceText;
+    [SerializeField] private Button buyVehicleButton;
+    [SerializeField] private Button selectVehicleButton;
+    [SerializeField] private GameObject vehicleCheckImage;
 
-    private int carCounter;
-    private Text carNameText;
+    private int currentVehicle = 0;
 
     [Inject] private VehiclesConfig vehiclesConfig;
     [Inject] private PlayerDataManager playerDataManager;
@@ -17,6 +22,25 @@ public class MainMenuSceneController : MonoBehaviour
     private void Start()
     {
         PlayerPrefs.SetInt("InputType", 2);
+
+        currentVehicle = playerDataManager.SelectedVehicle;
+        UpdateVehicleUi();
+        buyVehicleButton.onClick.AddListener(BuyVehicle);
+        selectVehicleButton.onClick.AddListener(SelectVehicle);
+    }
+
+    public void NextVehicle()
+    {
+        if (currentVehicle >= vehiclesConfig.Vehicles.Count - 1) return;
+        currentVehicle++;
+        UpdateVehicleUi();
+    }
+
+    public void PrevVehicle()
+    {
+        if (currentVehicle <= 0) return;
+        currentVehicle--;
+        UpdateVehicleUi();
     }
 
     public void Quit()
@@ -61,8 +85,8 @@ public class MainMenuSceneController : MonoBehaviour
         AgentRaceStarterInitializer init = raceInitiater.GetComponent<AgentRaceStarterInitializer>();
 
         int aitype = 9;
-        int playerType = playerDataManager.SelectedVehicle - 1;
-        int lap = 5;
+        int playerType = playerDataManager.SelectedVehicle;
+        int lap = 2;
         int aicount = 5;
         bool policeAgents = false;
 
@@ -70,5 +94,33 @@ public class MainMenuSceneController : MonoBehaviour
             init.AssignVariables(aitype, playerType, lap, aicount, policeAgents, true);
 
         InitiateFader.CreateFader("CircuitRace_Map_" + mapId, Color.black, 2.0f);
+    }
+
+    private void BuyVehicle()
+    {
+        if (playerDataManager.TryBuyVehicle(currentVehicle)) SelectVehicle();
+    }
+
+    private void SelectVehicle()
+    {
+        playerDataManager.SelectVehicle(currentVehicle);
+        UpdateVehicleUi();
+    }
+
+    private void UpdateVehicleUi()
+    {
+        playerGoldText.text = playerDataManager.Gold.ToString();
+        var vehicleStatus = playerDataManager.CheckPurchasedVehicle(currentVehicle);
+        buyVehicleButton.gameObject.SetActive(!vehicleStatus);
+        selectVehicleButton.gameObject.SetActive(vehicleStatus);
+        vehicleCheckImage.SetActive(playerDataManager.SelectedVehicle == currentVehicle);
+        var vehicle = vehiclesConfig.Vehicles.FirstOrDefault(v => v.Id == currentVehicle);
+        playerVehicleImage.sprite = vehicle.Sprite;
+        if (vehicleStatus) playerVehiclePriceText.gameObject.SetActive(false);
+        else
+        {
+            playerVehiclePriceText.gameObject.SetActive(true);
+            playerVehiclePriceText.text = vehicle.Price + "$";
+        }
     }
 }

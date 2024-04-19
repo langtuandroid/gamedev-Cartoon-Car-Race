@@ -75,3 +75,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehiclesConfig: {fileID: 11400000, guid: 79bbf9fc1c94f53448331ac7d8e92c75, type: 2}
+  raceRewardConfig: {fileID: 11400000, guid: 4fe0fcf387131b44c8d672a4e15ec495, type: 2}
