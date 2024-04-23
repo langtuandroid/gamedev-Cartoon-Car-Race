@@ -66,6 +66,7 @@ namespace negleft.AGS
         /// </summary>
         private bool humanIsRacingFlag = false;
         private int humanRacingAtValue = 0;
+        public float CurrentRaceTime { get; private set; } = 0f;
 
 
         private void Start()
@@ -142,6 +143,7 @@ namespace negleft.AGS
                 PathBasedAgents(agentsControllers, false);
             if (policeAgentsControllers != null)
                 PathBasedAgents(policeAgentsControllers, true);
+            CurrentRaceTime += Time.deltaTime;
         }
 
     

@@ -276,6 +276,7 @@ namespace negleft.AGS{
         [FormerlySerializedAs("mobileControlsHolder")] [SerializeField] private GameObject mobileControlsHolderObject;
         private bool playerFinishFlag = false;
         [SerializeField] private Text raceRewardText;
+        [SerializeField] private Text raceTimeText;
         [SerializeField] private Image raceRewardImage;
         [SerializeField] private Text playerPlaceText;
         [Inject] private PlayerDataManager playerDataManager;
@@ -747,6 +748,8 @@ namespace negleft.AGS{
                         raceRewardImage.enabled = true;
                     }
                     if (playerPlaceText != null) playerPlaceText.text = (playerPlace + 1).ToString();
+                    if (raceTimeText != null)
+                        raceTimeText.text = Utils.TimeToString(GetComponent<AgentPathController>().CurrentRaceTime);
                 }
             }
 

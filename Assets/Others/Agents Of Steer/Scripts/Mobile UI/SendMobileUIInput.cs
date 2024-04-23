@@ -21,8 +21,10 @@ namespace negleft.AGS{
         [FormerlySerializedAs("UI_Steer_BTNS")] [SerializeField] private GameObject UI_Steer_BTNS_Object;
         // next Y value
         private float toYValue = 0.0f;
+        private float toXValue = 0.0f;
         //var for lerp method
         private float yCounterValue = 0.0f;
+        private float xCounterValue = 0.0f;
         // Use this for initialization
         private void Start () {
             SetMobileUIControls();
@@ -70,8 +72,9 @@ namespace negleft.AGS{
 
                 case AICarDriverControl.ControlsTypes.UI_SteerWheel_BTNS:
 
-                    if (steerWheelUI)
-                        toDriver.SetInputXValue(steerWheelUI.GetClampedWheelValue());
+                    /*if (steerWheelUI)
+                        toDriver.SetInputXValue(steerWheelUI.GetClampedWheelValue());*/
+                    toDriver.SetInputXValue(LerpXValue());
 
                     toDriver.SetInputYValue(LerpYValue());
 
@@ -92,12 +95,28 @@ namespace negleft.AGS{
             float newY = Mathf.Clamp(Mathf.Lerp(0, toYValue, yCounterValue), -1.0f, 1.0f);
             return newY;
         }
+        private float LerpXValue() {
+            if (xCounterValue < 1.0f) {
+                xCounterValue += Time.deltaTime*5.0f;
+            }
+
+            if (xCounterValue > 1.0f)
+            {
+                xCounterValue = 1.0f;
+            }
+
+            float newX = Mathf.Clamp(Mathf.Lerp(0, toXValue, xCounterValue), -1.0f, 1.0f);
+            return newX;
+        }
         /// <summary>
         /// Set new Y value
         /// </summary>
         /// <param name="newY">pass this as new Y</param>
         public void SetInputYValue(float newY) {
             toYValue = newY;
+        }
+        public void SetInputXValue(float newX) {
+            toXValue = newX;
         }
         
     }

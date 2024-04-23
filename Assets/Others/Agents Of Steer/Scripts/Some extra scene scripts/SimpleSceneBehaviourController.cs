@@ -11,9 +11,13 @@ public class SimpleSceneBehaviourController : MonoBehaviour {
         /// </summary>
         /// <param name="scene"></param>
         public void LoadThisScene(string scene) {
+            Time.timeScale = 1;
+            AudioListener.pause = false;
             InitiateFader.CreateFader(scene, Color.black, 2.0f);
         }
         public void ReLoadThisScene() {
+            Time.timeScale = 1;
+            AudioListener.pause = false;
             mapLoadManager.ReloadLastMap();
         }
         /// <summary>

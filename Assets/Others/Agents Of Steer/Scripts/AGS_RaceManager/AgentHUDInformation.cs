@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ namespace negleft.AGS{
         /// Display the position
         /// </summary>
         [FormerlySerializedAs("positionDisplay")] [SerializeField] private  Text positionDisplayText;
+        [SerializeField] private Button pauseButton;
+        [SerializeField] private GameObject pausePanel;
         /// <summary>
         /// Hold speedOmeter Information
         /// </summary>
@@ -90,6 +93,7 @@ namespace negleft.AGS{
                 lapDisplayText.transform.parent.gameObject.SetActive(false);
             if (speedOMeterInfo.digitalDisplayText)
                 speedOMeterInfo.digitalDisplayText.transform.parent.gameObject.SetActive(false);
+            if (pauseButton) pauseButton.gameObject.SetActive(false);
 
             if (speedOMeterInfo.myDriverAI) {
                 if (speedOMeterInfo.digitalDisplayText)
@@ -108,10 +112,27 @@ namespace negleft.AGS{
                 lapDisplayText.transform.parent.gameObject.SetActive(true);
             if (speedOMeterInfo.digitalDisplayText)
                 speedOMeterInfo.digitalDisplayText.transform.parent.gameObject.SetActive(true);
+            if (pauseButton) pauseButton.gameObject.SetActive(true);
 
             GetCurrentDriver();
 
             StartCoroutine(UpdateHUDCoroutine());
+        }
+
+        public void ShowPausePanel()
+        {
+            if (pausePanel.activeSelf)
+            {
+                pausePanel.SetActive(false);
+                Time.timeScale = 1;
+                AudioListener.pause = false;
+            }
+            else
+            {
+                pausePanel.SetActive(true);
+                Time.timeScale = 0;
+                AudioListener.pause = true;
+            }
         }
 
         public void GetCurrentDriver() {
