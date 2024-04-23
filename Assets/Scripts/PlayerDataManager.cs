@@ -98,7 +98,7 @@ public class PlayerDataManager
     {
         playerData = new PlayerData()
         {
-            Gold = 50,
+            Gold = 0,
             SelectedVehicle = 0,
             PurchasedVehicles = new List<int>() {0}
         };
