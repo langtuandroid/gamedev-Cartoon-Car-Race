@@ -199,6 +199,7 @@ namespace negleft.AGS{
         [FormerlySerializedAs("flipTimeOut")] public float flipTimeOutValue = 1.0f;
         private float flipCounterValue = 0.0f;
         private AudioSource myAudioSource;
+        private bool muteFlag;
         private GameObject skidmarkKeeperObject;
         /// <summary>
         /// Rear brake lights
@@ -271,6 +272,8 @@ namespace negleft.AGS{
                 skidAudioSource.minDistance = myAudioSource.minDistance;
             }
             
+            muteFlag = PlayerPrefs.GetInt("Sound", 1) == 0;
+
         }
 
         /// <summary>
@@ -594,7 +597,7 @@ namespace negleft.AGS{
                 
             }
             //Screeching sound
-            if (willScreech && skidAudioSource && !isScreechingFlag && skidSoundoClip)
+            if (willScreech && skidAudioSource && !isScreechingFlag && skidSoundoClip && !muteFlag)
             {
                 isScreechingFlag = true;
                 skidAudioSource.PlayOneShot(skidSoundoClip);

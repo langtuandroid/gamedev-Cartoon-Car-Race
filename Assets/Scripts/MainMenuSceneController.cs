@@ -1,46 +1,73 @@
-using System.Linq;
-using negleft.AGS;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 
 public class MainMenuSceneController : MonoBehaviour
 {
-    [SerializeField] private Text playerGoldText;
-    [SerializeField] private Image playerVehicleImage;
-    [SerializeField] private Text playerVehiclePriceText;
-    [SerializeField] private Button buyVehicleButton;
-    [SerializeField] private Button selectVehicleButton;
-    [SerializeField] private GameObject vehicleCheckImage;
+    [SerializeField] private GameObject chaptersPanel;
+    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject garagePanel;
 
-    private int currentVehicle = 0;
+    [SerializeField] private ImageSwitcher soundImageSwitcher;
+    [SerializeField] private ImageSwitcher musicImageSwitcher;
+
+    [SerializeField] private Text playerGoldText;
+
+    [SerializeField] private VehicleItem vehicleItem;
+    [SerializeField] private Transform vehiclesContent;
+
+    private readonly List<VehicleItem> vehicleItems = new List<VehicleItem>();
+
+    private bool soundFlag;
+    private bool musicFlag;
 
     [Inject] private VehiclesConfig vehiclesConfig;
     [Inject] private PlayerDataManager playerDataManager;
+    [Inject] private MusicManager musicManager;
+    [Inject] private MapLoadManager mapLoadManager;
 
     private void Start()
     {
         PlayerPrefs.SetInt("InputType", 2);
 
-        currentVehicle = playerDataManager.SelectedVehicle;
-        UpdateVehicleUi();
-        buyVehicleButton.onClick.AddListener(BuyVehicle);
-        selectVehicleButton.onClick.AddListener(SelectVehicle);
+        soundFlag = PlayerPrefs.GetInt("Sound", 1) == 1;
+        soundImageSwitcher.Switch(soundFlag);
+        musicFlag = PlayerPrefs.GetInt("Music", 1) == 1;
+        musicImageSwitcher.Switch(musicFlag);
+
+        InitializeVehicles();
+        playerGoldText.text = playerDataManager.Gold.ToString();
     }
 
-    public void NextVehicle()
+    public void ShowOptionsPanel()
     {
-        if (currentVehicle >= vehiclesConfig.Vehicles.Count - 1) return;
-        currentVehicle++;
-        UpdateVehicleUi();
+        optionsPanel.gameObject.SetActive(!optionsPanel.gameObject.activeSelf);
     }
 
-    public void PrevVehicle()
+    public void ShowChaptersPanel()
     {
-        if (currentVehicle <= 0) return;
-        currentVehicle--;
-        UpdateVehicleUi();
+        chaptersPanel.gameObject.SetActive(!chaptersPanel.gameObject.activeSelf);
+    }
+
+    public void ShowGaragePanel()
+    {
+        garagePanel.gameObject.SetActive(!garagePanel.gameObject.activeSelf);
+    }
+
+    public void SwitchSound()
+    {
+        soundFlag = !soundFlag;
+        PlayerPrefs.SetInt("Sound", soundFlag ? 1 : 0);
+        soundImageSwitcher.Switch(soundFlag);
+    }
+
+    public void SwitchMusic()
+    {
+        musicFlag = !musicFlag;
+        PlayerPrefs.SetInt("Music", musicFlag ? 1 : 0);
+        musicImageSwitcher.Switch(musicFlag);
+        musicManager.TurnMusic(musicFlag);
     }
 
     public void Quit()
@@ -48,79 +75,43 @@ public class MainMenuSceneController : MonoBehaviour
         Application.Quit();
     }
 
-    public void LoadScene(string sceneName)
+    public void StartGame(int mapId)
     {
-        SceneManager.LoadScene(sceneName);
+        mapLoadManager.LoadNewMap(mapId);
     }
 
-    public void InitiateRaceConfig_Map1()
+    private void InitializeVehicles()
     {
-        StartGame(1);
-    }
-
-    public void InitiateRaceConfig_Map2()
-    {
-        StartGame(2);
-    }
-
-    public void InitiateRaceConfig_Map3()
-    {
-        StartGame(3);
-    }
-
-    public void InitiateRaceConfig_Map4()
-    {
-        StartGame(4);
-    }
-
-    public void InitiateRaceConfig_Map5()
-    {
-        StartGame(5);
-    }
-
-    private void StartGame(int mapId)
-    {
-        GameObject raceInitiater = new GameObject("RaceInitiater");
-        raceInitiater.AddComponent<AgentRaceStarterInitializer>();
-        AgentRaceStarterInitializer init = raceInitiater.GetComponent<AgentRaceStarterInitializer>();
-
-        int aitype = 9;
-        int playerType = playerDataManager.SelectedVehicle;
-        int lap = 2;
-        int aicount = 5;
-        bool policeAgents = false;
-
-        if (init)
-            init.AssignVariables(aitype, playerType, lap, aicount, policeAgents, true);
-
-        InitiateFader.CreateFader("CircuitRace_Map_" + mapId, Color.black, 2.0f);
-    }
-
-    private void BuyVehicle()
-    {
-        if (playerDataManager.TryBuyVehicle(currentVehicle)) SelectVehicle();
-    }
-
-    private void SelectVehicle()
-    {
-        playerDataManager.SelectVehicle(currentVehicle);
-        UpdateVehicleUi();
-    }
-
-    private void UpdateVehicleUi()
-    {
-        playerGoldText.text = playerDataManager.Gold.ToString();
-        var vehicleStatus = playerDataManager.CheckPurchasedVehicle(currentVehicle);
-        buyVehicleButton.gameObject.SetActive(!vehicleStatus);
-        selectVehicleButton.gameObject.SetActive(vehicleStatus);
-        vehicleCheckImage.SetActive(playerDataManager.SelectedVehicle == currentVehicle);
-        var vehicle = vehiclesConfig.Vehicles.FirstOrDefault(v => v.Id == currentVehicle);
-        playerVehicleImage.sprite = vehicle.Sprite;
-        if (vehicleStatus) playerVehiclePriceText.gameObject.SetActive(false);
-        else
+        vehiclesConfig.Vehicles.ForEach(vehicle =>
         {
-            playerVehiclePriceText.gameObject.SetActive(true);
-            playerVehiclePriceText.text = vehicle.Price + "$";
-        }
+            var item = Instantiate(vehicleItem, vehiclesContent);
+            item.Initialize(vehicle, playerDataManager.CheckPurchasedVehicle(vehicle.Id),
+                playerDataManager.SelectedVehicle == vehicle.Id);
+            item.BuyAction += BuyVehicle;
+            item.SelectAction += SelectVehicle;
+            vehicleItems.Add(item);
+        });
+    }
+
+    private void BuyVehicle(int id)
+    {
+        if (!playerDataManager.TryBuyVehicle(id)) return;
+        vehicleItems.ForEach(vehicle => vehicle.Buy(id));
+        playerGoldText.text = playerDataManager.Gold.ToString();
+    }
+
+    private void SelectVehicle(int id)
+    {
+        playerDataManager.SelectVehicle(id);
+        vehicleItems.ForEach(vehicle => vehicle.Select(id));
+    }
+
+    private void OnDestroy()
+    {
+        vehicleItems.ForEach(vehicle =>
+        {
+            vehicle.BuyAction -= BuyVehicle;
+            vehicle.SelectAction -= SelectVehicle;
+        });
     }
 }

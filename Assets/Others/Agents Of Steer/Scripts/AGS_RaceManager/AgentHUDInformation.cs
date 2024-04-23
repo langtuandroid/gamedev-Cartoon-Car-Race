@@ -26,6 +26,7 @@ namespace negleft.AGS{
         [System.Serializable]
         public struct speedDisplayInfo{
             [FormerlySerializedAs("needle")] public Image needleImage;
+            public Image speedImage;
             [FormerlySerializedAs("digitalDisplay")] public Text digitalDisplayText;
             [FormerlySerializedAs("minAngle")] public float minAngleValue;
             [FormerlySerializedAs("maxAngle")] public float maxAngleValue;
@@ -53,23 +54,25 @@ namespace negleft.AGS{
             float deltaTime = 0.0f;
             while (myRaceManagerAgent) {
                 if (lapDisplayText) {
-                    lapDisplayText.text = "LAP - " + myRaceManagerAgent.GetTheLapNumberValue(agentIDHUD).ToString() +"/"+myRaceManagerAgent.HowManyRaceLaps().ToString();
+                    lapDisplayText.text = /*"LAP - " + */myRaceManagerAgent.GetTheLapNumberValue(agentIDHUD).ToString() +"/"+myRaceManagerAgent.HowManyRaceLaps().ToString();
                 }
 
                 if (positionDisplayText)
                 {
-                    positionDisplayText.text = "POSITION - " + myRaceManagerAgent.GetPositionInTheRaceHierarchy(agentIDHUD).ToString() + "/" + myRaceManagerAgent.HowManyRacingAgents().ToString();
+                    positionDisplayText.text = /*"POSITION - " +*/ myRaceManagerAgent.GetPositionInTheRaceHierarchy(agentIDHUD).ToString() /*+ "/" + myRaceManagerAgent.HowManyRacingAgents().ToString()*/;
                 }
 
                 if (speedOMeterInfo.myDriverAI) {
                     currClampedVelocity = speedOMeterInfo.myDriverAI.GetClampedVelocityValue();
                     targetAngle = Mathf.Lerp(speedOMeterInfo.minAngleValue, speedOMeterInfo.maxAngleValue, currClampedVelocity);
-                    if (speedOMeterInfo.needleImage) {
+                    if (false && speedOMeterInfo.needleImage) {
                         speedOMeterInfo.needleImage.rectTransform.localEulerAngles = new Vector3(0.0f, 0.0f, Mathf.LerpAngle(speedOMeterInfo.needleImage.rectTransform.localEulerAngles.z , targetAngle,deltaTime*5.0f));
                     }
                     if (speedOMeterInfo.digitalDisplayText) {
-                        speedOMeterInfo.digitalDisplayText.text = (currClampedVelocity * speedOMeterInfo.myDriverAI.maxSpeedValue).ToString() + " KM/h";
+                        speedOMeterInfo.digitalDisplayText.text = ((int)(currClampedVelocity * speedOMeterInfo.myDriverAI.maxSpeedValue)).ToString() /*+ " KM/h"*/;
                     }
+                    speedOMeterInfo.speedImage.fillAmount = Mathf.LerpAngle(speedOMeterInfo.speedImage.fillAmount,
+                        currClampedVelocity, deltaTime * 5.0f);
                 }
                 deltaTime = Time.time - lastTime;
                 lastTime = Time.time;
@@ -82,9 +85,11 @@ namespace negleft.AGS{
         /// </summary>
         public void DisableInfoHUD() {
             if (positionDisplayText)
-                positionDisplayText.enabled = false;
+                positionDisplayText.transform.parent.gameObject.SetActive(false);
             if (lapDisplayText)
-                lapDisplayText.enabled = false;
+                lapDisplayText.transform.parent.gameObject.SetActive(false);
+            if (speedOMeterInfo.digitalDisplayText)
+                speedOMeterInfo.digitalDisplayText.transform.parent.gameObject.SetActive(false);
 
             if (speedOMeterInfo.myDriverAI) {
                 if (speedOMeterInfo.digitalDisplayText)
@@ -98,9 +103,11 @@ namespace negleft.AGS{
         public void EnableInfoHUD() {
             
             if (positionDisplayText)
-                positionDisplayText.enabled = true;
+                positionDisplayText.transform.parent.gameObject.SetActive(true);
             if (lapDisplayText)
-                lapDisplayText.enabled = true;
+                lapDisplayText.transform.parent.gameObject.SetActive(true);
+            if (speedOMeterInfo.digitalDisplayText)
+                speedOMeterInfo.digitalDisplayText.transform.parent.gameObject.SetActive(true);
 
             GetCurrentDriver();
 

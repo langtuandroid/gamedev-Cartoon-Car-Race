@@ -276,6 +276,8 @@ namespace negleft.AGS{
         [FormerlySerializedAs("mobileControlsHolder")] [SerializeField] private GameObject mobileControlsHolderObject;
         private bool playerFinishFlag = false;
         [SerializeField] private Text raceRewardText;
+        [SerializeField] private Image raceRewardImage;
+        [SerializeField] private Text playerPlaceText;
         [Inject] private PlayerDataManager playerDataManager;
         [Inject] private RaceRewardConfig raceRewardConfig;
 
@@ -739,7 +741,12 @@ namespace negleft.AGS{
                 {
                     var reward = raceRewardConfig.GetReward(playerPlace);
                     playerDataManager.AddGold(reward);
-                    if (reward > 0 && raceRewardText != null) raceRewardText.text = "+" + reward + "$";
+                    if (reward > 0 && raceRewardText != null)
+                    {
+                        raceRewardText.text = reward.ToString();
+                        raceRewardImage.enabled = true;
+                    }
+                    if (playerPlaceText != null) playerPlaceText.text = (playerPlace + 1).ToString();
                 }
             }
 

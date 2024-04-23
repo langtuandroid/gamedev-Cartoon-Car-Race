@@ -7,4 +7,5 @@ public class VehicleData
     public int Id;
     public int Price;
     public Sprite Sprite;
+    public string Name;
 }

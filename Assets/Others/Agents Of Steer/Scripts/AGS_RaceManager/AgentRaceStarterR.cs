@@ -61,6 +61,7 @@ namespace negleft.AGS{
 
         // Use this for initialization
         private void Start () {
+            audioPlayerSource.mute = PlayerPrefs.GetInt("Sound", 1) == 0;
             //Start the race at play
             if (initiateAtStartFlag)
                 InitiateTheRaceStarterObject(3, 6, 4,2,true,false);
@@ -156,6 +157,8 @@ namespace negleft.AGS{
             int rand;
             int totalSpawned = 0;
 
+            var muteFlag = PlayerPrefs.GetInt("Sound", 1) == 0;
+
             //spawn the AI
             for (int i = 0; i < MaxAI; i++) {
 
@@ -184,6 +187,8 @@ namespace negleft.AGS{
                             currentPathAgent.AddNewRaceAgent(currSpawnedCar.GetComponent<AgentRaceController>());
                             totalSpawned++;
                         }
+
+                        currSpawnedCar.GetComponentInChildren<AudioSource>().mute = muteFlag;
                     }
                 }
 
@@ -216,6 +221,8 @@ namespace negleft.AGS{
                     currentPathAgent.AddNewRaceAgent(currSpawnedCar.GetComponent<AgentRaceController>());
                     currentPathAgent.PlayerSpawnedAt(totalSpawned);
                 }
+
+                currSpawnedCar.GetComponentInChildren<AudioSource>().mute = muteFlag;
             }
             else {
                 rand = Random.Range(0, spawnedCars.Count);
