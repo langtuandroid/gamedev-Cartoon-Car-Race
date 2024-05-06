@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Integration;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -8,11 +9,13 @@ public class MainMenuSceneController : MonoBehaviour
     [SerializeField] private GameObject chaptersPanel;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject garagePanel;
+    [SerializeField] private GameObject diamondsPanel;
 
     [SerializeField] private ImageSwitcher soundImageSwitcher;
     [SerializeField] private ImageSwitcher musicImageSwitcher;
 
-    [SerializeField] private Text playerGoldText;
+    [SerializeField] private List<Text> playerGoldTextsList;
+    [SerializeField] private List<Text> playerDiamondsTextsList;
 
     [SerializeField] private VehicleItem vehicleItem;
     [SerializeField] private Transform vehiclesContent;
@@ -22,10 +25,14 @@ public class MainMenuSceneController : MonoBehaviour
     private bool soundFlag;
     private bool musicFlag;
 
+    private int currentVehicle;
+
     [Inject] private VehiclesConfig vehiclesConfig;
     [Inject] private PlayerDataManager playerDataManager;
     [Inject] private MusicManager musicManager;
     [Inject] private MapLoadManager mapLoadManager;
+    [Inject] private RewardedAdController rewardedAdController;
+    [Inject] private IAPService iapService;
 
     private void Start()
     {
@@ -37,7 +44,10 @@ public class MainMenuSceneController : MonoBehaviour
         musicImageSwitcher.Switch(musicFlag);
 
         InitializeVehicles();
-        playerGoldText.text = playerDataManager.Gold.ToString();
+        UpdateCurrencies();
+
+        rewardedAdController.GetRewarded += GetReward;
+        iapService.DiamondsPurchased += UpdateCurrencies;
     }
 
     public void ShowOptionsPanel()
@@ -53,6 +63,11 @@ public class MainMenuSceneController : MonoBehaviour
     public void ShowGaragePanel()
     {
         garagePanel.gameObject.SetActive(!garagePanel.gameObject.activeSelf);
+    }
+
+    public void ShowDiamondsPanel()
+    {
+        diamondsPanel.gameObject.SetActive(!diamondsPanel.gameObject.activeSelf);
     }
 
     public void SwitchSound()
@@ -80,6 +95,26 @@ public class MainMenuSceneController : MonoBehaviour
         mapLoadManager.LoadNewMap(mapId);
     }
 
+    public void BuyPack1()
+    {
+        iapService.BuyPack1();
+    }
+
+    public void BuyPack2()
+    {
+        iapService.BuyPack2();
+    }
+
+    public void BuyPack3()
+    {
+        iapService.BuyPack3();
+    }
+
+    public void BuyPack4()
+    {
+        iapService.BuyPack4();
+    }
+
     private void InitializeVehicles()
     {
         vehiclesConfig.Vehicles.ForEach(vehicle =>
@@ -93,11 +128,44 @@ public class MainMenuSceneController : MonoBehaviour
         });
     }
 
-    private void BuyVehicle(int id)
+    private void BuyVehicle(int id, PurchaseType purchaseType)
     {
-        if (!playerDataManager.TryBuyVehicle(id)) return;
+        switch (purchaseType)
+        {
+            case PurchaseType.Gold:
+                if (!playerDataManager.TryBuyVehicle(id)) return;
+                break;
+            case PurchaseType.Diamonds:
+                if (!playerDataManager.TryBuyVehicleByDiamonds(id)) return;
+                break;
+            case PurchaseType.Ads:
+                ShowRewardedAd(id);
+                return;
+        }
+
         vehicleItems.ForEach(vehicle => vehicle.Buy(id));
-        playerGoldText.text = playerDataManager.Gold.ToString();
+        UpdateCurrencies();
+    }
+
+    private void ShowRewardedAd(int id)
+    {
+        currentVehicle = id;
+        rewardedAdController.ShowAd();
+    }
+
+    private void GetReward()
+    {
+        if (currentVehicle <= 0 || !playerDataManager.TryBuyVehicleByAd(currentVehicle)) return;
+
+        vehicleItems.ForEach(vehicle => vehicle.Buy(currentVehicle));
+    }
+
+    private void UpdateCurrencies()
+    {
+        var gold = playerDataManager.Gold.ToString();
+        var diamonds = PlayerPrefs.GetInt("Diamond", 0).ToString();
+        playerGoldTextsList.ForEach(t => t.text = gold);
+        playerDiamondsTextsList.ForEach(t => t.text = diamonds);
     }
 
     private void SelectVehicle(int id)
@@ -113,5 +181,7 @@ public class MainMenuSceneController : MonoBehaviour
             vehicle.BuyAction -= BuyVehicle;
             vehicle.SelectAction -= SelectVehicle;
         });
+        rewardedAdController.GetRewarded -= GetReward;
+        iapService.DiamondsPurchased -= UpdateCurrencies;
     }
 }

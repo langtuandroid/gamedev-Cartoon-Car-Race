@@ -12,6 +12,8 @@ public class PlayerDataManager
     private string playerName = "Player";
     private VehiclesConfig vehiclesConfig;
 
+    public int GameNumber = 0;
+
     public int Gold => playerData.Gold;
 
     public int SelectedVehicle => playerData.SelectedVehicle;
@@ -33,6 +35,32 @@ public class PlayerDataManager
             return false;
 
         playerData.Gold -= vehicleData.Price;
+        playerData.PurchasedVehicles.Add(vehicleId);
+        SaveData();
+
+        return true;
+    }
+
+    public bool TryBuyVehicleByDiamonds(int vehicleId)
+    {
+        var vehicleData = vehiclesConfig.Vehicles.FirstOrDefault(v => v.Id == vehicleId);
+        var diamonds = PlayerPrefs.GetInt("Diamond", 0);
+
+        if (CheckPurchasedVehicle(vehicleId) || vehicleData == null || diamonds < vehicleData.Price)
+            return false;
+
+        diamonds -= vehicleData.Price;
+        playerData.PurchasedVehicles.Add(vehicleId);
+        SaveData();
+        PlayerPrefs.SetInt("Diamond", diamonds);
+
+        return true;
+    }
+
+    public bool TryBuyVehicleByAd(int vehicleId)
+    {
+        if (CheckPurchasedVehicle(vehicleId)) return false;
+
         playerData.PurchasedVehicles.Add(vehicleId);
         SaveData();
 

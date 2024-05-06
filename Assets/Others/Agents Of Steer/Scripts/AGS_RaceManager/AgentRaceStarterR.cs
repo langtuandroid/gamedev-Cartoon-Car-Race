@@ -1,8 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Integration;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Zenject;
+
 namespace negleft.AGS{
     [RequireComponent(typeof(AgentPathController))]
     public class AgentRaceStarterR : MonoBehaviour {
@@ -58,6 +62,11 @@ namespace negleft.AGS{
         /// UI input Objecy
         /// </summary>
         [FormerlySerializedAs("uIInput")] [SerializeField] private SendMobileUIInput uIInputObject;
+        private int loopsNo;
+        [Inject] private PlayerDataManager playerDataManager;
+        [Inject] private InterstitialAdController interstitialAdController;
+        [Inject] private IAPService iapService;
+        [Inject] private AdMobController adMobController;
 
         // Use this for initialization
         private void Start () {
@@ -90,8 +99,41 @@ namespace negleft.AGS{
                 }
             }
             SpawnTheCars(reqAIType, noOfAIs,reqPlayerType,isMobile);
-            StartCoroutine(StartCountdownCoroutine(noOfLaps));
+
+            loopsNo = noOfLaps;
+
+            playerDataManager.GameNumber++;
+
+            if (adMobController.IsPurchased)
+            {
+                StartCoroutine(StartCountdownCoroutine(noOfLaps));
+                return;
+            }
+
+            if (playerDataManager.GameNumber % 2 == 1)
+            {
+                interstitialAdController.OnAdClosed += StartCountdownAfterAd;
+                interstitialAdController.ShowAd();
+            }
+            else
+            {
+                iapService.SubscriptionPanelClosed += StartCountdownAfterSubscriptionPanel;
+                iapService.ShowSubscriptionPanel();
+            }
         }
+
+        private void StartCountdownAfterAd()
+        {
+            interstitialAdController.OnAdClosed -= StartCountdownAfterAd;
+            StartCoroutine(StartCountdownCoroutine(loopsNo));
+        }
+
+        private void StartCountdownAfterSubscriptionPanel()
+        {
+            iapService.SubscriptionPanelClosed -= StartCountdownAfterSubscriptionPanel;
+            StartCoroutine(StartCountdownCoroutine(loopsNo));
+        }
+
         /// <summary>
         /// Count down
         /// </summary>
