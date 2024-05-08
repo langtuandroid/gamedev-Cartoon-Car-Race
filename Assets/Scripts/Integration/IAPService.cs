@@ -1,45 +1,46 @@
 using System;
-using Integration;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
 using UnityEngine.UI;
 using Zenject;
 
 
-public class IAPService : MonoBehaviour, IStoreListener
+namespace Integration
 {
+    public class IAPService : MonoBehaviour, IDetailedStoreListener 
+    {
         public event Action DiamondsPurchased;
         public event Action SubscriptionPanelClosed;
-
         private static IStoreController _storeController;
         private static IExtensionProvider _extensionsProvider;
-
-        private const string subscriptionMonthProductID = "sub.gamedev.test.one.month";
-        private const string subscriptionYearProductID = "sub.gamedev.test.one.year";
-        private const string subscriptionForeverProductID = "sub.gamedev.test.forever";
         
-        public const string buy100Id = "test.gamedev.buy100";
-        public const string buy300Id = "test.gamedev.buy300";
-        public const string buy1000Id = "test.gamedev.buy1000";
-        public const string buy3000Id = "test.gamedev.buy3000";
-
+        [SerializeField]
+        private PurchaseIDHolder _purchaseIDHolder;
         [SerializeField]
         public Toggle _toggleMonth;
         [SerializeField]
         public Toggle _toggleYear;
         [SerializeField]
         public Toggle _toggleForever;
-        
         [SerializeField]
         public Button _buySubscriptionButton;
         [SerializeField]
         public Button _closeSubpanel;
-        
         [SerializeField]
         private GameObject _subscriptionCanvas;
         
+        private string _subscriptionMonthProductID;
+        private string _subscriptionYearProductID;
+        private string _subscriptionForeverProductID;
+        
+        private string _buy100Id;
+        private string _buy300Id;
+        private string _buy1000Id;
+        private string _buy3000Id;
+        
         private AdMobController _adMobController;
-       
 
         [Inject]
         private void Construct (AdMobController adMobController)
@@ -49,10 +50,10 @@ public class IAPService : MonoBehaviour, IStoreListener
 
         private void Awake()
         {
+            LoadID();
             if (_storeController == null)
             {
                 InitializePurchasing();
-                CheckSubscriptionStatus();  
             }
             else
             {
@@ -60,6 +61,18 @@ public class IAPService : MonoBehaviour, IStoreListener
                 Debug.Log(nameOfError);
             }
             DontDestroyOnLoad(gameObject);
+        }
+        
+        private void LoadID()
+        {
+            _subscriptionMonthProductID = _purchaseIDHolder.SubscriptionMonthID;
+            _subscriptionYearProductID = _purchaseIDHolder.SubscriptionYearID;
+            _subscriptionForeverProductID = _purchaseIDHolder.SubscriptionForeverID;
+            
+            _buy100Id = _purchaseIDHolder.Buy100Id;
+            _buy300Id = _purchaseIDHolder.Buy300Id;
+            _buy1000Id = _purchaseIDHolder.Buy1000Id;
+            _buy3000Id = _purchaseIDHolder.Buy3000Id;
         }
 
         private void OnEnable()
@@ -93,26 +106,62 @@ public class IAPService : MonoBehaviour, IStoreListener
 
         private void CheckSubscriptionStatus()
         {
-            string[] productIds = { subscriptionMonthProductID, subscriptionYearProductID, subscriptionForeverProductID };
-
-            bool subscriptionActive = false;
-
-            foreach (string productId in productIds)
+            if (IsInitialized())
             {
-                Product product = GetProduct(productId);
-                if (product != null && product.hasReceipt)
+                string[] productIds = { _subscriptionMonthProductID, _subscriptionYearProductID, _subscriptionForeverProductID };
+
+                bool subscriptionActive = false;
+
+                foreach (string productId in productIds)
                 {
-                    subscriptionActive = true;
-                    break;
+                    var subscriptionProduct = _storeController.products.WithID(productId);
+
+                    try
+                    {
+                        var isSubscribed = IsSubscribedTo(subscriptionProduct);
+                        string isSubscribedText = isSubscribed ? "You are subscribed" : "You are not subscribed";
+                        Debug.Log("isSubscribedText = " + isSubscribedText);
+                        subscriptionActive = isSubscribed;
+                        if (subscriptionActive)
+                        {
+                            break;
+                        }
+                    }
+                    catch (StoreSubscriptionInfoNotSupportedException)
+                    {
+                        var receipt = (Dictionary<string, object>)MiniJson.JsonDecode(subscriptionProduct.receipt);
+                        var store = receipt["Store"];
+                        string isSubscribedText =
+                            "Couldn't retrieve subscription information because your current store is not supported.\n" +
+                            $"Your store: \"{store}\"\n\n" +
+                            "You must use the App Store, Google Play Store or Amazon Store to be able to retrieve subscription information.\n\n" +
+                            "For more information, see README.md";
+                        Debug.Log("isSubscribedText = " + isSubscribedText);
+                    }
+                }
+                PlayerPrefs.SetInt(_adMobController.noAdsKey, subscriptionActive ? 1 : 0);
+                PlayerPrefs.Save();
+                if (subscriptionActive)
+                {
+                    HideSubscriptionPanel();
+                }
+                else
+                {
+                    ShowSubscriptionPanel();
                 }
             }
-            PlayerPrefs.SetInt(_adMobController.noAdsKey, subscriptionActive ? 1 : 0);
-            if (subscriptionActive && _subscriptionCanvas != null)
-            {
-                HideSubscriptionPanel();
-            }
         }
-
+        
+        bool IsSubscribedTo(Product subscription)
+        {
+            if (subscription.receipt == null)
+            {
+                return false;
+            }
+            var subscriptionManager = new SubscriptionManager(subscription, null);
+            var info = subscriptionManager.getSubscriptionInfo();
+            return info.isSubscribed() == Result.True;
+        }
 
         public bool IsInitialized()
         {
@@ -121,183 +170,161 @@ public class IAPService : MonoBehaviour, IStoreListener
 
         private void InitializePurchasing()
         {
-            if (IsInitialized())
-            {
-                return;
-            }
-
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
-            builder.AddProduct(subscriptionMonthProductID, ProductType.Subscription);
-            builder.AddProduct(subscriptionYearProductID, ProductType.Subscription);
-            builder.AddProduct(subscriptionForeverProductID, ProductType.Subscription);
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule
+#if UNITY_IOS
+             .Instance(AppStore.AppleAppStore));
+#elif UNITY_ANDROID
+            .Instance(AppStore.GooglePlay));
+#else
+            .Instance(AppStore.NotSpecified));
+#endif
+            builder.AddProduct(_subscriptionMonthProductID, ProductType.Subscription);
+            builder.AddProduct(_subscriptionYearProductID, ProductType.Subscription);
+            builder.AddProduct(_subscriptionForeverProductID, ProductType.NonConsumable);
             
-            builder.AddProduct(buy100Id, ProductType.Consumable);
-            builder.AddProduct(buy300Id, ProductType.Consumable);
-            builder.AddProduct(buy1000Id, ProductType.Consumable);
-            builder.AddProduct(buy3000Id, ProductType.Consumable);
+            builder.AddProduct(_buy100Id, ProductType.Consumable);
+            builder.AddProduct(_buy300Id, ProductType.Consumable);
+            builder.AddProduct(_buy1000Id, ProductType.Consumable);
+            builder.AddProduct(_buy3000Id, ProductType.Consumable);
 
             UnityPurchasing.Initialize(this, builder);
         }
         
-        public Product GetProduct(string productID)
-        {
-            if (IsInitialized())
-            {
-                return _storeController.products.WithID(productID);
-            }
-            return null;
-        }
 
         public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
         {
             Debug.Log("OnInitialized: SUCSESS");
             _storeController = controller;
             _extensionsProvider = extensions;
+            
+            CheckSubscriptionStatus();
         }
 
         private void BuySubscription()
         {
             if (_toggleMonth.isOn)
             {
-                BuyProductID(subscriptionMonthProductID);
+                BuyProductID(_subscriptionMonthProductID);
             }
             else if (_toggleYear.isOn)
             {
-                BuyProductID(subscriptionYearProductID);
+                BuyProductID(_subscriptionYearProductID);
             }
             else if (_toggleForever.isOn)
             {
-                BuyProductID(subscriptionForeverProductID);
-            }
-            else
-            {
-                Debug.LogError("No subscription type selected.");
+                BuyProductID(_subscriptionForeverProductID);
             }
         }
         
         public void BuyPack1()
         {
-            BuyProductID(buy100Id);
+            BuyProductID(_buy100Id);
         }
 
         public void BuyPack2()
         {
-            BuyProductID(buy300Id);
+            BuyProductID(_buy300Id);
         }
 
         public void BuyPack3()
         {
-            BuyProductID(buy1000Id);
+            BuyProductID(_buy1000Id);
         }
         
         public void BuyPack4()
         {
-            BuyProductID(buy3000Id);
+            BuyProductID(_buy3000Id);
         }
 
         
         public void BuyProductID(string productId)
         {
-            if (IsInitialized())
-            {
-                _storeController.InitiatePurchase(productId);
-                Product product = _storeController.products.WithID(productId);
-
-                if (product is {availableToPurchase: true})
-                {
-                    Debug.Log($"Purchasing product asychronously: '{product.definition.id}'");
-                }
-                else
-                {
-                    Debug.Log("Failed to purchase subscription. Product is not available.");
-                }
-            }
-            else
-            {
-                Debug.Log("[STORE NOT INITIALIZED]");
-            }
+            _storeController.InitiatePurchase(productId);
         }
         
 
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
         {
-            if (String.Equals(args.purchasedProduct.definition.id, subscriptionMonthProductID, StringComparison.Ordinal))
+            var product = args.purchasedProduct;
+            if (product.definition.id == _subscriptionMonthProductID)
             {
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
                 _adMobController.RemoveAds();
                 HideSubscriptionPanel();
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, subscriptionYearProductID, StringComparison.Ordinal))
+            if (product.definition.id == _subscriptionYearProductID)
             {
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
                 _adMobController.RemoveAds();
                 HideSubscriptionPanel();
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, subscriptionForeverProductID, StringComparison.Ordinal))
+            if (product.definition.id == _subscriptionForeverProductID)
             {
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
                 _adMobController.RemoveAds();
                 HideSubscriptionPanel();
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, buy100Id, StringComparison.Ordinal))
+            if (product.definition.id == _buy100Id)
             {
+                //ToDo: Add Your Purchasing Logic
                 PlayerPrefs.SetInt("Diamond", PlayerPrefs.GetInt("Diamond") + 100);
+                PlayerPrefs.Save();
                 DiamondsPurchased?.Invoke();
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, buy300Id, StringComparison.Ordinal))
+            if (product.definition.id == _buy300Id)
             {
+                //ToDo: Add Your Purchasing Logic
                 PlayerPrefs.SetInt("Diamond", PlayerPrefs.GetInt("Diamond") + 300);
+                PlayerPrefs.Save();
                 DiamondsPurchased?.Invoke();
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, buy1000Id, StringComparison.Ordinal))
+            if (product.definition.id == _buy1000Id)
             {
+                //ToDo: Add Your Purchasing Logic
                 PlayerPrefs.SetInt("Diamond", PlayerPrefs.GetInt("Diamond") + 1000);
+                PlayerPrefs.Save();
                 DiamondsPurchased?.Invoke();
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
             }
-            else if (String.Equals(args.purchasedProduct.definition.id, buy3000Id, StringComparison.Ordinal))
+            if (product.definition.id == _buy3000Id)
             {
+                //ToDo: Add Your Purchasing Logic
                 PlayerPrefs.SetInt("Diamond", PlayerPrefs.GetInt("Diamond") + 3000);
+                PlayerPrefs.Save();
                 DiamondsPurchased?.Invoke();
-                Debug.Log($"ProcessPurchase: PASS. Product: '{args.purchasedProduct.definition.id}'");
+                Debug.Log($"ProcessPurchase: PASS. Product: '{product.definition.id}'");
             }
-            else
-            {
-                Debug.Log($"ProcessPurchase: FAIL. Unrecognized product: '{args.purchasedProduct.definition.id}'");
-            }
-        
+            
             return PurchaseProcessingResult.Complete;
         }
         
         public void RestorePurchases()
         {
-            if (IsInitialized() && _extensionsProvider != null)
+            if (IsInitialized())
             {
                 Debug.Log("Restoring purchases...");
-
-                _extensionsProvider.GetExtension<IAppleExtensions>()?.RestoreTransactions(OnRestoreComplete);
+                _extensionsProvider.GetExtension<IAppleExtensions>()?.RestoreTransactions(OnRestore);
             }
             else
             {
                 Debug.Log("[STORE NOT INITIALIZED]");
             }
-            _subscriptionCanvas.SetActive(false);
-            SubscriptionPanelClosed?.Invoke();
         }
 
-        private void OnRestoreComplete(bool success)
+        private void OnRestore(bool success, string error)
         {
+            var restoreMessage = "";
             if (success)
             {
-                Debug.Log("Purchases successfully restored.");
+                restoreMessage = "Restore Successful";
             }
             else
             {
-                Debug.Log("Failed to restore purchases.");
+                restoreMessage = $"Restore Failed with error: {error}";
             }
+            Debug.Log(restoreMessage);
         }
 
         public void OnInitializeFailed(InitializationFailureReason error)
@@ -313,5 +340,11 @@ public class IAPService : MonoBehaviour, IStoreListener
         public void OnInitializeFailed(InitializationFailureReason error, string? message)
         {
             Debug.Log("OnInitializeFailed InitializationFailureReason:" + error);
-        }                
+        }  
+        
+        public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
+        {
+            Debug.Log($"OnPurchaseFailed: {product}. {failureDescription}");
+        }
     }
+}

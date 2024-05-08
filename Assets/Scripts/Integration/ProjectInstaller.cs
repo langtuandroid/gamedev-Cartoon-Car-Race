@@ -1,20 +1,23 @@
-using Integration;
 using UnityEngine;
 using Zenject;
 
-public class ProjectInstaller : MonoInstaller
+namespace Integration
 {
-    [SerializeField] 
-    private AdMobController _adMobController;
-    [SerializeField] 
-    private IAPService _iapService;
-    public override void InstallBindings()
+    public class ProjectInstaller : MonoInstaller
     {
-        Container.Bind<IAPService>().FromInstance(_iapService).AsSingle().NonLazy();
-        Container.Bind<AdMobController>().FromInstance(_adMobController).AsSingle().NonLazy();
+        [SerializeField] 
+        private AdMobController _adMobController;
+        [SerializeField] 
+        private IAPService _iapService;
 
-        Container.Bind<BannerViewController>().AsSingle().NonLazy();
-        Container.Bind<InterstitialAdController>().AsSingle().NonLazy();
-        Container.Bind<RewardedAdController>().AsSingle().NonLazy();
+        public override void InstallBindings()
+        {
+            Container.Bind<IAPService>().FromInstance(_iapService).AsSingle().NonLazy();
+            Container.Bind<AdMobController>().FromInstance(_adMobController).AsSingle().NonLazy();
+        
+            Container.Bind<BannerViewController>().AsSingle().NonLazy();
+            Container.Bind<InterstitialAdController>().AsSingle().NonLazy();
+            Container.Bind<RewardedAdController>().AsSingle().NonLazy();
+        }
     }
 }

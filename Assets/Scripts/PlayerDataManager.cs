@@ -53,6 +53,7 @@ public class PlayerDataManager
         playerData.PurchasedVehicles.Add(vehicleId);
         SaveData();
         PlayerPrefs.SetInt("Diamond", diamonds);
+        PlayerPrefs.Save();
 
         return true;
     }
